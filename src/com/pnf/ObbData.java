@@ -135,19 +135,19 @@ public class ObbData {
 	public boolean parseObbFile(byte[] bytes){
 		data = new LinkedHashMap<>();
 		
-		ByteArrayInputStream is = null;
+		ByteArrayInputStream stream = null;
 		try {
-			is = new ByteArrayInputStream(bytes);
+			stream = new ByteArrayInputStream(bytes);
 			long fileLength = bytes.length;
 
 			if (fileLength < kFooterMinSize) {
 				throw new RuntimeException("file is only " + fileLength + " (less than " + kFooterMinSize + " minimum)");            
 			}
 
-			is.reset();
-			is.skip(fileLength - kFooterTagSize);
+			stream.reset();
+			stream.skip(fileLength - kFooterTagSize);
 			byte[] footer = new byte[kFooterTagSize];
-			int len = is.read(footer);
+			int len = stream.read(footer);
 
 			if(len == -1 || len < footer.length){
 				throw new IOException();
@@ -175,11 +175,11 @@ public class ObbData {
 			}
 
 			long fileOffset = fileLength - footerSize - kFooterTagSize;
-			is.reset();
-			is.skip(fileOffset);
+			stream.reset();
+			stream.skip(fileOffset);
 
 			footer = new byte[(int)footerSize];
-			len = is.read(footer);
+			len = stream.read(footer);
 
 			if(len == -1 || len < footer.length){
 				throw new IOException();
@@ -221,9 +221,9 @@ public class ObbData {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}finally{
-			if(is != null){
+			if(stream != null){
 				try {
-					is.close();
+					stream.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
