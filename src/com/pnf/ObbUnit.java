@@ -36,7 +36,10 @@ public class ObbUnit extends AbstractBinaryUnit implements IInteractiveUnit {
 	}
 	
 	public boolean process(){
-		IUnit fatChildUnit = getUnitProcessor().process(this.getName(), this.getBytes(), this);
+		byte[] data = this.getBytes();
+		ObbData.removeFooter(data);
+		
+		IUnit fatChildUnit = getUnitProcessor().process(this.getName(), data, this);
 		this.getChildren().add(fatChildUnit);
 		return true;
 	}
