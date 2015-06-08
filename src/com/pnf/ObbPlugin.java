@@ -16,7 +16,10 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 	}
 
 	public boolean identify(byte[] stream, IUnit unit) {
+		// Create obbData object to attempt to parse stream
 		obbData = new ObbData();
+		
+		// identification success happens when parsing success occurs
 		return obbData.parseObbFile(stream);
 	}
 	
@@ -27,8 +30,11 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 
 	@Override
 	public IUnit prepare(String name, byte[] data, IUnitProcessor processor, IUnit parent) {
+		// Create IUnit of type ObbUnit to delgate processing
 		ObbUnit obbUnit = new ObbUnit(obbData, name, data, processor, parent, pdm);
 		obbUnit.process();
+		
+		// Return the newly created ObbUnit
 		return obbUnit;
 	}
 
