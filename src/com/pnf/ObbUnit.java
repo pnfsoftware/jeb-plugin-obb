@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.pnfsoftware.jeb.core.actions.InformationForActionExecution;
+import com.pnfsoftware.jeb.core.properties.IPropertyDefinitionManager;
 import com.pnfsoftware.jeb.core.units.AbstractBinaryUnit;
 import com.pnfsoftware.jeb.core.units.IInteractiveUnit;
 import com.pnfsoftware.jeb.core.units.IUnit;
@@ -22,13 +23,13 @@ public class ObbUnit extends AbstractBinaryUnit implements IInteractiveUnit {
 		Map<String, String> data = image.getData();
 		StringBuffer desc = new StringBuffer();
 		
-		desc.append("Type " + PluginData.OBB_NAME + "\n");
+		desc.append("Type: " + PluginData.OBB_NAME + "\n");
 		desc.append("\n");
-		desc.append("Properties:");
-		String tab = "  - ";
+		desc.append("Properties:\n");
+		String tab = " - ";
 		
 		for(String s: keys){
-			desc.append(tab + s + ":= " + data.get(s) + "\n");
+			desc.append(tab + s + " := " + data.get(s) + "\n");
 		}
 		
 		return desc.toString();
