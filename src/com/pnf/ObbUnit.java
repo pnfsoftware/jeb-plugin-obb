@@ -1,16 +1,13 @@
 package com.pnf;
 
-import java.util.List;
 import java.util.Map;
 
-import com.pnfsoftware.jeb.core.actions.InformationForActionExecution;
 import com.pnfsoftware.jeb.core.properties.IPropertyDefinitionManager;
 import com.pnfsoftware.jeb.core.units.AbstractBinaryUnit;
-import com.pnfsoftware.jeb.core.units.IInteractiveUnit;
 import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
 
-public class ObbUnit extends AbstractBinaryUnit implements IInteractiveUnit {
+public class ObbUnit extends AbstractBinaryUnit{
 	private ObbData image;
 
 	public ObbUnit(ObbData image, String name, byte[] data, IUnitProcessor unitProcessor, IUnit parent, IPropertyDefinitionManager pdm) {
@@ -42,20 +39,5 @@ public class ObbUnit extends AbstractBinaryUnit implements IInteractiveUnit {
 		IUnit fatChildUnit = getUnitProcessor().process(PluginData.FAT_IMAGE_NAME, data, this);
 		this.getChildren().add(fatChildUnit);
 		return true;
-	}
-	
-	@Override
-	public boolean executeAction(InformationForActionExecution info) {
-		return false;
-	}
-
-	@Override
-	public List<Integer> getItemActions(long id) {
-		return null;
-	}
-
-	@Override
-	public boolean prepareExecution(InformationForActionExecution info) {
-		return false;
 	}
 }
