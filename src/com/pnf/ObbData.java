@@ -154,7 +154,7 @@ public class ObbData {
 			long fileLength = bytes.length;
 
 			if (fileLength < kFooterMinSize) {
-				throw new RuntimeException("file is only " + fileLength + " (less than " + kFooterMinSize + " minimum)");            
+				return false;            
 			}
 
 			stream.reset();
@@ -170,21 +170,18 @@ public class ObbData {
 			footBuf.position(4);
 			long fileSig = get4LE(footBuf);
 			if (fileSig != kSignature) {
-				throw new RuntimeException("footer didn't match magic string (expected 0x" + Long.toHexString(kSignature) + ";got 0x" +
-						Long.toHexString(fileSig)+ ")");
+				return false;
 			}
 
 			footBuf.rewind();
 			long footerSize = get4LE(footBuf);
 			if (footerSize > fileLength - kFooterTagSize
 					|| footerSize > kMaxBufSize) {
-				throw new RuntimeException("claimed footer size is too large (0x" + Long.toHexString(footerSize) + "; file size is 0x" +
-						Long.toHexString(fileLength)+ ")");
+				return false;
 			}
 
 			if (footerSize < (kFooterMinSize - kFooterTagSize)) {
-				throw new RuntimeException("claimed footer size is too small (0x" + Long.toHexString(footerSize) + "; minimum size is 0x" +
-						Long.toHexString(kFooterMinSize - kFooterTagSize));
+				return false;
 			}
 
 			long fileOffset = fileLength - footerSize - kFooterTagSize;
@@ -195,14 +192,14 @@ public class ObbData {
 			len = stream.read(footer);
 
 			if(len == -1 || len < footer.length){
-				throw new IOException();
+				return false;
 			}
 
 			footBuf = ByteBuffer.wrap(footer);
 
 			long sigVersion = get4LE(footBuf);
 			if (sigVersion != kSigVersion) {
-				throw new RuntimeException("Unsupported ObbFile version " + sigVersion );
+				return false;
 			}
 
 			footBuf.position(kPackageVersionOffset);
@@ -221,8 +218,7 @@ public class ObbData {
 			long packageNameLen = get4LE(footBuf);
 			if (packageNameLen == 0
 					|| packageNameLen > (footerSize - kPackageNameOffset)) {
-				throw new RuntimeException("bad ObbFile package name length (0x" + Long.toHexString(packageNameLen) +
-						"; 0x" + Long.toHexString(footerSize - kPackageNameOffset) + "possible)");
+				return false;
 			}
 			byte[] packageNameBuf = new byte[(int)packageNameLen];
 			footBuf.position(kPackageNameOffset);
@@ -232,7 +228,7 @@ public class ObbData {
 			data.put(DATA_KEYS[0], mPackageName);
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			return false;
 		}finally{
 			if(stream != null){
 				try {
@@ -242,7 +238,6 @@ public class ObbData {
 				}
 			}
 		}
-		return false;
 	}
 
 	public boolean parseObbFile(File obbFile){
