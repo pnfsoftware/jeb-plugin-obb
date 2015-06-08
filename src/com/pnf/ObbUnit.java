@@ -13,8 +13,8 @@ import com.pnfsoftware.jeb.core.units.IUnitProcessor;
 public class ObbUnit extends AbstractBinaryUnit implements IInteractiveUnit {
 	private ObbData image;
 
-	public ObbUnit(ObbData image, String name, byte[] data, IUnitProcessor unitProcessor, IUnit parent) {
-		super(null, data, PluginData.OBB_NAME, name, unitProcessor, parent, parent.getPropertyDefinitionManager());
+	public ObbUnit(ObbData image, String name, byte[] data, IUnitProcessor unitProcessor, IUnit parent, IPropertyDefinitionManager pdm) {
+		super(null, data, PluginData.OBB_NAME, name, unitProcessor, parent, pdm);
 		this.image = image;
 	}
 	

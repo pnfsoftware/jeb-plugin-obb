@@ -27,7 +27,7 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 
 	@Override
 	public IUnit prepare(String name, byte[] data, IUnitProcessor processor, IUnit parent) {
-		ObbUnit obbUnit = new ObbUnit(obbData, name, data, processor, parent);
+		ObbUnit obbUnit = new ObbUnit(obbData, name, data, processor, parent, pdm);
 		obbUnit.process();
 		return obbUnit;
 	}
