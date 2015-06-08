@@ -34,6 +34,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ObbData {
 	public static final int  OBB_OVERLAY =        (1 << 0);
@@ -51,25 +53,35 @@ public class ObbData {
 	 * 32-bit footer marker (4 bytes)
 	 */
 
-	static final int kMaxBufSize = 32768;       /* Maximum file read buffer */
+	private static final int kMaxBufSize = 32768;       /* Maximum file read buffer */
 
-	static final long kSignature  = 0x01059983;  /* ObbFile signature */
+	private static final long kSignature  = 0x01059983;  /* ObbFile signature */
 
-	static final int kSigVersion = 1;           /* We only know about signature version 1 */
+	private static final int kSigVersion = 1;           /* We only know about signature version 1 */
 
 	/* offsets in version 1 of the header */
-	static final int kPackageVersionOffset = 4;
-	static final int kFlagsOffset          = 8;
-	static final int kSaltOffset           = 12;
-	static final int kPackageNameLenOffset = 20;
-	static final int kPackageNameOffset    = 24;
+	private static final int kPackageVersionOffset = 4;
+	private static final int kFlagsOffset          = 8;
+	private static final int kSaltOffset           = 12;
+	private static final int kPackageNameLenOffset = 20;
+	private static final int kPackageNameOffset    = 24;
 
-	long mPackageVersion = -1, mFlags;
-	String mPackageName;
-	byte[] mSalt = new byte[8];
+	public static final String[] DATA_KEYS = {"PACKAGE_NAME", "PACKAGE_VERSION", "FLAGS", "SALT"};
+	
+	private long mPackageVersion = -1, mFlags;
+	private String mPackageName;
+	private byte[] mSalt = new byte[8];
+	
+	private Map<String, String> data;
 
 	public ObbData() {}
 
+	public Map<String, String> getData(){
+		if(data == null)
+			throw new RuntimeException("Data not yet read from obb file");
+		return data;
+	}
+	
 	public boolean readFrom(String filename){
 		File obbFile = new File(filename);
 		return readFrom(obbFile);
@@ -82,6 +94,22 @@ public class ObbData {
 	static public long get4LE(ByteBuffer buf) {
 		buf.order(ByteOrder.LITTLE_ENDIAN);
 		return (buf.getInt() & 0xFFFFFFFFL);
+	}
+
+	public long getmPackageVersion() {
+		return mPackageVersion;
+	}
+
+	public long getFlags() {
+		return mFlags;
+	}
+
+	public String getPackageName() {
+		return mPackageName;
+	}
+
+	public byte[] getSalt() {
+		return mSalt;
 	}
 
 	public void setPackageName(String packageName) {
@@ -104,6 +132,8 @@ public class ObbData {
 	}
 
 	public boolean parseObbFile(byte[] bytes){
+		data = new LinkedHashMap<>();
+		
 		ByteArrayInputStream is = null;
 		try {
 			is = new ByteArrayInputStream(bytes);
@@ -163,11 +193,16 @@ public class ObbData {
 
 			footBuf.position(kPackageVersionOffset);
 			mPackageVersion = get4LE(footBuf);
+			data.put(DATA_KEYS[1], String.valueOf(mPackageVersion));
+			
 			footBuf.position(kFlagsOffset);
 			mFlags = get4LE(footBuf);
+			data.put(DATA_KEYS[2], String.valueOf(mFlags));
 
 			footBuf.position(kSaltOffset);
 			footBuf.get(mSalt);
+			data.put(DATA_KEYS[3], new String(mSalt));
+			
 			footBuf.position(kPackageNameLenOffset);
 			long packageNameLen = get4LE(footBuf);
 			if (packageNameLen == 0
@@ -180,6 +215,7 @@ public class ObbData {
 			footBuf.get(packageNameBuf);
 
 			mPackageName = new String(packageNameBuf);
+			data.put(DATA_KEYS[0], mPackageName);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
