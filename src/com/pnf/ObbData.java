@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -201,7 +202,7 @@ public class ObbData {
 
 			footBuf.position(kSaltOffset);
 			footBuf.get(mSalt);
-			data.put(DATA_KEYS[3], new String(mSalt));
+			data.put(DATA_KEYS[3], Arrays.toString(mSalt));
 			
 			footBuf.position(kPackageNameLenOffset);
 			long packageNameLen = get4LE(footBuf);
