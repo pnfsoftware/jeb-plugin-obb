@@ -15,6 +15,7 @@ public class ObbUnit extends AbstractBinaryUnit{
 		this.image = image;
 	}
 	
+	// Override superclass getDescription to show Obb-specific information
 	public String getDescription(){
 		String[] keys = ObbData.DATA_KEYS;
 		Map<String, String> data = image.getData();
@@ -33,10 +34,16 @@ public class ObbUnit extends AbstractBinaryUnit{
 	}
 	
 	public boolean process(){
+		// Retrieve raw bytes passed to this unit
 		byte[] data = this.getBytes();
+		
+		// Remove the footer obb data to prevent UnitProcessor from creating an ObbUnit again
 		ObbData.removeFooter(data);
 		
+		// Call unit processor on modified data (will return a FAT unit)
 		IUnit fatChildUnit = getUnitProcessor().process(PluginData.FAT_IMAGE_NAME, data, this);
+		
+		// Add new FAT unit to this unit's list of children
 		this.getChildren().add(fatChildUnit);
 		return true;
 	}
