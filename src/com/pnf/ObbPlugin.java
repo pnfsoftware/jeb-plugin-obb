@@ -8,16 +8,16 @@ import com.pnfsoftware.jeb.core.units.IBinaryFrames;
 import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
 
-public class ObbPlugin extends AbstractUnitIdentifier{
-	private static String ID = "obb_plugin";
+public class ObbPlugin extends AbstractUnitIdentifier{	
+	private ObbData obbData;
 	
 	public ObbPlugin() {
-		super(ID, 0);
+		super(PluginData.ID, 0);
 	}
 
 	public boolean identify(byte[] stream, IUnit unit) {
-		ObbData data = new ObbData();
-		return data.parseObbFile(stream);
+		obbData = new ObbData();
+		return obbData.parseObbFile(stream);
 	}
 	
 	public void initialize(IPropertyDefinitionManager parent, IPropertyManager pm) {
@@ -26,8 +26,10 @@ public class ObbPlugin extends AbstractUnitIdentifier{
     }
 
 	@Override
-	public IUnit prepare(String name, byte[] data, IUnitProcessor processor, IUnit unit) {
-		return null;
+	public IUnit prepare(String name, byte[] data, IUnitProcessor processor, IUnit parent) {
+		ObbUnit obbUnit = new ObbUnit(obbData, name, data, processor, parent);
+		obbUnit.process();
+		return obbUnit;
 	}
 
 	@Override
