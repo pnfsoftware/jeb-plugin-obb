@@ -92,9 +92,22 @@ public class ObbData {
 		return parseObbFile(obbFile);
 	}
 
-	static public long get4LE(ByteBuffer buf) {
+	public static long get4LE(ByteBuffer buf) {
 		buf.order(ByteOrder.LITTLE_ENDIAN);
 		return (buf.getInt() & 0xFFFFFFFFL);
+	}
+	
+	public static boolean removeFooter(byte[] obbData){
+		if(obbData.length < kFooterMinSize){
+			return false;
+		}
+		
+		/* Zero out the indices where the footer is stored */
+		for(int i = obbData.length - kFooterTagSize; i < obbData.length; i++){
+			obbData[i] = 0x0;
+		}
+		
+		return true;
 	}
 
 	public long getmPackageVersion() {
