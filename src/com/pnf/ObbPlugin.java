@@ -44,7 +44,7 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 
 	@Override
 	public PluginInformation getPluginInformation() {
-		return new PluginInformation("Android OBB Plugin", "", "0.111", "PNF Software");
+		return new PluginInformation("Android OBB Plugin", "", "1.0", "PNF Software");
 	}
 
 	@Override
