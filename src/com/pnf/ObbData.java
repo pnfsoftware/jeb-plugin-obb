@@ -68,11 +68,11 @@ public class ObbData {
 	private static final int kPackageNameOffset    = 24;
 
 	public static final String[] DATA_KEYS = {"PACKAGE_NAME", "PACKAGE_VERSION", "FLAGS", "SALT"};
-	
+
 	private long mPackageVersion = -1, mFlags;
 	private String mPackageName;
 	private byte[] mSalt = new byte[8];
-	
+
 	private Map<String, String> data;
 
 	public ObbData() {}
@@ -82,7 +82,7 @@ public class ObbData {
 			throw new RuntimeException("Data not yet read from obb file");
 		return data;
 	}
-	
+
 	public boolean readFrom(String filename){
 		File obbFile = new File(filename);
 		return readFrom(obbFile);
@@ -96,17 +96,17 @@ public class ObbData {
 		buf.order(ByteOrder.LITTLE_ENDIAN);
 		return (buf.getInt() & 0xFFFFFFFFL);
 	}
-	
+
 	public static boolean removeFooter(byte[] obbData){
 		if(obbData.length < kFooterMinSize){
 			return false;
 		}
-		
+
 		/* Zero out the indices where the footer is stored */
 		for(int i = obbData.length - kFooterTagSize; i < obbData.length; i++){
 			obbData[i] = 0x0;
 		}
-		
+
 		return true;
 	}
 
@@ -147,7 +147,7 @@ public class ObbData {
 
 	public boolean parseObbFile(byte[] bytes){
 		data = new LinkedHashMap<>();
-		
+
 		ByteArrayInputStream stream = null;
 		try {
 			stream = new ByteArrayInputStream(bytes);
@@ -205,7 +205,7 @@ public class ObbData {
 			footBuf.position(kPackageVersionOffset);
 			mPackageVersion = get4LE(footBuf);
 			data.put(DATA_KEYS[1], String.valueOf(mPackageVersion));
-			
+
 			footBuf.position(kFlagsOffset);
 			mFlags = get4LE(footBuf);
 			data.put(DATA_KEYS[2], String.valueOf(mFlags));
@@ -213,7 +213,7 @@ public class ObbData {
 			footBuf.position(kSaltOffset);
 			footBuf.get(mSalt);
 			data.put(DATA_KEYS[3], Arrays.toString(mSalt));
-			
+
 			footBuf.position(kPackageNameLenOffset);
 			long packageNameLen = get4LE(footBuf);
 			if (packageNameLen == 0
