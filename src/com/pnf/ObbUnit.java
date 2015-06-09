@@ -11,7 +11,7 @@ public class ObbUnit extends AbstractBinaryUnit{
 	private ObbData image;
 
 	public ObbUnit(ObbData image, String name, byte[] data, IUnitProcessor unitProcessor, IUnit parent, IPropertyDefinitionManager pdm) {
-		super(null, data, PluginData.OBB_NAME, name, unitProcessor, parent, pdm);
+		super(null, data, ObbPlugin.OBB_NAME, name, unitProcessor, parent, pdm);
 		this.image = image;
 	}
 
@@ -40,7 +40,7 @@ public class ObbUnit extends AbstractBinaryUnit{
 		ObbData.removeFooter(data);
 
 		// Call unit processor on modified data (will return a FAT unit)
-		IUnit fatChildUnit = getUnitProcessor().process(PluginData.FAT_IMAGE_NAME, data, this);
+		IUnit fatChildUnit = getUnitProcessor().process(ObbPlugin.FAT_IMAGE_NAME, data, this);
 
 		// Add new FAT unit to this unit's list of children
 		this.getChildren().add(fatChildUnit);

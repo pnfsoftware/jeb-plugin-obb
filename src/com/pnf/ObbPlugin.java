@@ -8,11 +8,15 @@ import com.pnfsoftware.jeb.core.units.IBinaryFrames;
 import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
 
-public class ObbPlugin extends AbstractUnitIdentifier{	
+public class ObbPlugin extends AbstractUnitIdentifier{
+	public static String ID = "obb_plugin";
+	public static String OBB_NAME = "obb_file";
+	public static String FAT_IMAGE_NAME = "obb_image";
+	
 	private ObbData obbData;
 
 	public ObbPlugin() {
-		super(PluginData.ID, 0);
+		super(ID, 0);
 	}
 
 	public boolean identify(byte[] stream, IUnit unit) {
