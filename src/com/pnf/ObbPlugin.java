@@ -33,7 +33,7 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 		// Parse obb data into object
 		ObbData obbData = new ObbData();
 		obbData.parseObbFile(data);
-		
+
 		// Create IUnit of type ObbUnit to delgate processing
 		ObbUnit obbUnit = new ObbUnit(obbData, name, data, processor, parent, pdm);
 		obbUnit.process();
