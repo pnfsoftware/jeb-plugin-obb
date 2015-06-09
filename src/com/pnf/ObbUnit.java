@@ -21,7 +21,6 @@ public class ObbUnit extends AbstractBinaryUnit{
 		Map<String, String> data = image.getData();
 		StringBuffer desc = new StringBuffer(super.getDescription()+ "\n\n");
 		
-		desc.append("Type: " + PluginData.OBB_NAME + "\n");
 		desc.append("\n");
 		desc.append("Properties:\n");
 		String tab = " - ";
