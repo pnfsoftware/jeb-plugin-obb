@@ -25,6 +25,7 @@ public class ObbUnit extends AbstractBinaryUnit{
 		desc.append("Properties:\n");
 		String tab = " - ";
 
+		// Append all key-value pairs to the description received from the superclass
 		for(String s: keys){
 			desc.append(tab + s + " := " + data.get(s) + "\n");
 		}
