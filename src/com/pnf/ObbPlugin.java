@@ -9,22 +9,18 @@ import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
 
 public class ObbPlugin extends AbstractUnitIdentifier{
+	private static final int[] OBB_SIG = {(byte) 0x83, (byte) 0x99, (byte) 0x05, (byte) 0x01};
 	public static String ID = "obb_plugin";
 	public static String OBB_NAME = "obb_file";
 	public static String FAT_IMAGE_NAME = "obb_image";
-
-	private ObbData obbData;
 
 	public ObbPlugin() {
 		super(OBB_NAME, 1); // Give ObbPlugin higher priority than FatPlugin to make sure we enter this plugin first
 	}
 
 	public boolean identify(byte[] stream, IUnit unit) {
-		// Create obbData object to attempt to parse stream
-		obbData = new ObbData();
-
-		// identification success happens when parsing success occurs
-		return obbData.parseObbFile(stream);
+		// Check for obb signature
+		return checkBytes(stream, stream.length - OBB_SIG.length, OBB_SIG);
 	}
 
 	public void initialize(IPropertyDefinitionManager parent, IPropertyManager pm) {
@@ -34,6 +30,10 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 
 	@Override
 	public IUnit prepare(String name, byte[] data, IUnitProcessor processor, IUnit parent) {
+		// Parse obb data into object
+		ObbData obbData = new ObbData();
+		obbData.parseObbFile(data);
+		
 		// Create IUnit of type ObbUnit to delgate processing
 		ObbUnit obbUnit = new ObbUnit(obbData, name, data, processor, parent, pdm);
 		obbUnit.process();
