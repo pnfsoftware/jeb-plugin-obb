@@ -19,10 +19,10 @@ public class ObbUnit extends AbstractBinaryUnit{
 
 	// Override superclass getDescription to show Obb-specific information
 	public String getDescription(){
-		
+
 		String[] keys = ObbData.DATA_KEYS;
 		Map<String, String> data = image.getData();
-		
+
 		// First populate description variable with superclass description
 		StringBuffer desc = new StringBuffer(super.getDescription()+ "\n\n");
 
@@ -51,7 +51,7 @@ public class ObbUnit extends AbstractBinaryUnit{
 		// Add new FAT unit to this unit's list of children
 		this.getChildren().add(fatChildUnit);
 		notifyListeners(new JebEvent(J.UnitChange));
-		
+
 		return true;
 	}
 }

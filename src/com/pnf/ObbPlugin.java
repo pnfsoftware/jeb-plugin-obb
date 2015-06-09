@@ -12,7 +12,7 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 	public static String ID = "obb_plugin";
 	public static String OBB_NAME = "obb_file";
 	public static String FAT_IMAGE_NAME = "obb_image";
-	
+
 	private ObbData obbData;
 
 	public ObbPlugin() {
