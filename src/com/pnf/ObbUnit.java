@@ -2,6 +2,8 @@ package com.pnf;
 
 import java.util.Map;
 
+import com.pnfsoftware.jeb.core.events.J;
+import com.pnfsoftware.jeb.core.events.JebEvent;
 import com.pnfsoftware.jeb.core.properties.IPropertyDefinitionManager;
 import com.pnfsoftware.jeb.core.units.AbstractBinaryUnit;
 import com.pnfsoftware.jeb.core.units.IUnit;
@@ -17,11 +19,14 @@ public class ObbUnit extends AbstractBinaryUnit{
 
 	// Override superclass getDescription to show Obb-specific information
 	public String getDescription(){
+		
 		String[] keys = ObbData.DATA_KEYS;
 		Map<String, String> data = image.getData();
+		
+		// First populate description variable with superclass description
 		StringBuffer desc = new StringBuffer(super.getDescription()+ "\n\n");
 
-		desc.append("\n");
+		// Now add OBB specific information
 		desc.append("Properties:\n");
 		String tab = " - ";
 
@@ -45,6 +50,8 @@ public class ObbUnit extends AbstractBinaryUnit{
 
 		// Add new FAT unit to this unit's list of children
 		this.getChildren().add(fatChildUnit);
+		notifyListeners(new JebEvent(J.UnitChange));
+		
 		return true;
 	}
 }
