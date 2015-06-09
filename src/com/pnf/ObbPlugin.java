@@ -16,7 +16,7 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 	private ObbData obbData;
 
 	public ObbPlugin() {
-		super(ID, 0);
+		super(OBB_NAME, 1); // Give ObbPlugin higher priority than FatPlugin to make sure we enter this plugin first
 	}
 
 	public boolean identify(byte[] stream, IUnit unit) {
@@ -44,7 +44,7 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 
 	@Override
 	public PluginInformation getPluginInformation() {
-		return new PluginInformation("Android OBB Plugin", "", "1.0", "PNF Software");
+		return new PluginInformation("Android OBB Plugin", "", "0.111", "PNF Software");
 	}
 
 	@Override
