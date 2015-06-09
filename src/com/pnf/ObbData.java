@@ -163,7 +163,7 @@ public class ObbData {
 			int len = stream.read(footer);
 
 			if(len == -1 || len < footer.length){
-				throw new IOException();
+				return false;
 			}
 
 			ByteBuffer footBuf = ByteBuffer.wrap(footer);
@@ -234,7 +234,7 @@ public class ObbData {
 				try {
 					stream.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					return false;
 				}
 			}
 		}
@@ -311,8 +311,8 @@ public class ObbData {
 			raf.close();    
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		
 		return false;
 	}    
 }
