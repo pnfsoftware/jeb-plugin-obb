@@ -19,7 +19,7 @@ public class ObbUnit extends AbstractBinaryUnit{
 	public String getDescription(){
 		String[] keys = ObbData.DATA_KEYS;
 		Map<String, String> data = image.getData();
-		StringBuffer desc = new StringBuffer();
+		StringBuffer desc = new StringBuffer(super.getDescription()+ "\n\n");
 		
 		desc.append("Type: " + PluginData.OBB_NAME + "\n");
 		desc.append("\n");
