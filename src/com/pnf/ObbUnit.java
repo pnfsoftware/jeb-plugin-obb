@@ -1,18 +1,24 @@
 package com.pnf;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
+import com.pnfsoftware.jeb.core.IUnitCreator;
 import com.pnfsoftware.jeb.core.events.J;
 import com.pnfsoftware.jeb.core.events.JebEvent;
+import com.pnfsoftware.jeb.core.input.BytesInput;
+import com.pnfsoftware.jeb.core.input.IInput;
 import com.pnfsoftware.jeb.core.properties.IPropertyDefinitionManager;
 import com.pnfsoftware.jeb.core.units.AbstractBinaryUnit;
 import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
+import com.pnfsoftware.jeb.util.IO;
 
 public class ObbUnit extends AbstractBinaryUnit{
 	private ObbData image;
 
-	public ObbUnit(ObbData image, String name, byte[] data, IUnitProcessor unitProcessor, IUnit parent, IPropertyDefinitionManager pdm) {
+	public ObbUnit(ObbData image, String name, IInput data, IUnitProcessor unitProcessor, IUnitCreator parent, IPropertyDefinitionManager pdm) {
 		super(null, data, ObbPlugin.OBB_NAME, name, unitProcessor, parent, pdm);
 		this.image = image;
 	}
@@ -40,13 +46,18 @@ public class ObbUnit extends AbstractBinaryUnit{
 
 	public boolean process(){
 		// Retrieve raw bytes passed to this unit
-		byte[] data = this.getBytes();
+		byte[] data = null;
+
+		try(InputStream stream = getInput().getStream()){
+			data = IO.readInputStream(stream);
+		}catch(IOException e){
+		}
 
 		// Remove the footer obb data to prevent UnitProcessor from creating an ObbUnit again
 		ObbData.removeFooter(data);
 
 		// Call unit processor on modified data (will return a FAT unit)
-		IUnit fatChildUnit = getUnitProcessor().process(ObbPlugin.FAT_IMAGE_NAME, data, this);
+		IUnit fatChildUnit = getUnitProcessor().process(ObbPlugin.FAT_IMAGE_NAME, new BytesInput(data), this);
 
 		// Add new FAT unit to this unit's list of children
 		this.getChildren().add(fatChildUnit);
