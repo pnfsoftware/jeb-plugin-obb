@@ -7,6 +7,7 @@ import java.nio.channels.SeekableByteChannel;
 
 import com.pnfsoftware.jeb.core.IUnitCreator;
 import com.pnfsoftware.jeb.core.PluginInformation;
+import com.pnfsoftware.jeb.core.Version;
 import com.pnfsoftware.jeb.core.input.IInput;
 import com.pnfsoftware.jeb.core.properties.IPropertyDefinitionManager;
 import com.pnfsoftware.jeb.core.properties.IPropertyManager;
@@ -68,6 +69,6 @@ public class ObbPlugin extends AbstractUnitIdentifier{
 
 	@Override
 	public PluginInformation getPluginInformation() {
-		return new PluginInformation("Android OBB Plugin", "", "1.0", "PNF Software");
+		return new PluginInformation("Android OBB Plugin", "Opaque Binary Blob Parser", "PNF Software", new Version(1, 0, 0));
 	}
 }
