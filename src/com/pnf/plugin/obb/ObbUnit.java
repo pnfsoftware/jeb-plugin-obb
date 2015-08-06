@@ -37,7 +37,7 @@ public class ObbUnit extends AbstractBinaryUnit {
 
     public ObbUnit(ObbData image, String name, IInput data, IUnitProcessor unitProcessor, IUnitCreator parent,
             IPropertyDefinitionManager pdm) {
-        super(null, data, ObbPlugin.OBB_NAME, name, unitProcessor, parent, pdm);
+        super(null, data, ObbPlugin.ID, name, unitProcessor, parent, pdm);
         this.image = image;
     }
 
