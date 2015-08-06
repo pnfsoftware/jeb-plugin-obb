@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 The Android Open Source Project 
+ * Copyright (C) 2012, 2015 The Android Open Source Project 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,280 +39,287 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ObbData {
-	public static final int  OBB_OVERLAY =        (1 << 0);
-	public static final int  OBB_SALTED =         (1 << 1);
+    public static final int OBB_OVERLAY = (1 << 0);
+    public static final int OBB_SALTED = (1 << 1);
 
-	static final int kFooterTagSize = 8;   /* last two 32-bit integers */
+    static final int kFooterTagSize = 8; /* last two 32-bit integers */
 
-	static final int kFooterMinSize = 33;  /* 32-bit signature version (4 bytes)
-	 * 32-bit package version (4 bytes)
-	 * 32-bit flags (4 bytes)
-	 * 64-bit salt (8 bytes)
-	 * 32-bit package name size (4 bytes)
-	 * >=1-character package name (1 byte)
-	 * 32-bit footer size (4 bytes)
-	 * 32-bit footer marker (4 bytes)
-	 */
+    static final int kFooterMinSize = 33; /*
+                                           * 32-bit signature version (4 bytes)
+                                           * 32-bit package version (4 bytes)
+                                           * 32-bit flags (4 bytes) 64-bit salt
+                                           * (8 bytes) 32-bit package name size
+                                           * (4 bytes) >=1-character package
+                                           * name (1 byte) 32-bit footer size (4
+                                           * bytes) 32-bit footer marker (4
+                                           * bytes)
+                                           */
 
-	private static final int kMaxBufSize = 32768;       /* Maximum file read buffer */
+    private static final int kMaxBufSize = 32768; /* Maximum file read buffer */
 
-	private static final long kSignature  = 0x01059983;  /* ObbFile signature */
+    private static final long kSignature = 0x01059983; /* ObbFile signature */
 
-	private static final int kSigVersion = 1;           /* We only know about signature version 1 */
+    private static final int kSigVersion = 1; /*
+                                               * We only know about signature
+                                               * version 1
+                                               */
 
-	/* offsets in version 1 of the header */
-	private static final int kPackageVersionOffset = 4;
-	private static final int kFlagsOffset          = 8;
-	private static final int kSaltOffset           = 12;
-	private static final int kPackageNameLenOffset = 20;
-	private static final int kPackageNameOffset    = 24;
+    /* offsets in version 1 of the header */
+    private static final int kPackageVersionOffset = 4;
+    private static final int kFlagsOffset = 8;
+    private static final int kSaltOffset = 12;
+    private static final int kPackageNameLenOffset = 20;
+    private static final int kPackageNameOffset = 24;
 
-	public static final String[] DATA_KEYS = {"PACKAGE_NAME", "PACKAGE_VERSION", "FLAGS", "SALT"};
+    public static final String[] DATA_KEYS = { "PACKAGE_NAME", "PACKAGE_VERSION", "FLAGS", "SALT" };
 
-	private long mPackageVersion = -1, mFlags;
-	private String mPackageName;
-	private byte[] mSalt = new byte[8];
+    private long mPackageVersion = -1, mFlags;
+    private String mPackageName;
+    private byte[] mSalt = new byte[8];
 
-	private Map<String, String> data;
+    private Map<String, String> data;
 
-	public ObbData() {}
+    public ObbData() {
+    }
 
-	public Map<String, String> getData(){
-		if(data == null)
-			throw new RuntimeException("Data not yet read from obb file");
-		return data;
-	}
+    public Map<String, String> getData() {
+        if(data == null)
+            throw new RuntimeException("Data not yet read from obb file");
+        return data;
+    }
 
-	public boolean readFrom(String filename){
-		File obbFile = new File(filename);
-		return readFrom(obbFile);
-	}
+    public boolean readFrom(String filename) {
+        File obbFile = new File(filename);
+        return readFrom(obbFile);
+    }
 
-	public boolean readFrom(File obbFile){
-		return parseObbFile(obbFile);
-	}
+    public boolean readFrom(File obbFile) {
+        return parseObbFile(obbFile);
+    }
 
-	public static long get4LE(ByteBuffer buf) {
-		buf.order(ByteOrder.LITTLE_ENDIAN);
-		return (buf.getInt() & 0xFFFFFFFFL);
-	}
+    public static long get4LE(ByteBuffer buf) {
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+        return (buf.getInt() & 0xFFFFFFFFL);
+    }
 
-	public static boolean removeFooter(byte[] obbData){
-		if(obbData.length < kFooterMinSize){
-			return false;
-		}
+    public static boolean removeFooter(byte[] obbData) {
+        if(obbData.length < kFooterMinSize) {
+            return false;
+        }
 
-		/* Zero out the indices where the footer is stored */
-		for(int i = obbData.length - kFooterTagSize; i < obbData.length; i++){
-			obbData[i] = 0x0;
-		}
+        /* Zero out the indices where the footer is stored */
+        for(int i = obbData.length - kFooterTagSize; i < obbData.length; i++) {
+            obbData[i] = 0x0;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public long getmPackageVersion() {
-		return mPackageVersion;
-	}
+    public long getmPackageVersion() {
+        return mPackageVersion;
+    }
 
-	public long getFlags() {
-		return mFlags;
-	}
+    public long getFlags() {
+        return mFlags;
+    }
 
-	public String getPackageName() {
-		return mPackageName;
-	}
+    public String getPackageName() {
+        return mPackageName;
+    }
 
-	public byte[] getSalt() {
-		return mSalt;
-	}
+    public byte[] getSalt() {
+        return mSalt;
+    }
 
-	public void setPackageName(String packageName) {
-		mPackageName = packageName;
-	}
+    public void setPackageName(String packageName) {
+        mPackageName = packageName;
+    }
 
-	public void setSalt(byte[] salt) {
-		if ( salt.length != mSalt.length ) {
-			throw new RuntimeException("salt must be " + mSalt.length + " characters in length");
-		}
-		System.arraycopy(salt, 0, mSalt, 0, mSalt.length);
-	}
+    public void setSalt(byte[] salt) {
+        if(salt.length != mSalt.length) {
+            throw new RuntimeException("salt must be " + mSalt.length + " characters in length");
+        }
+        System.arraycopy(salt, 0, mSalt, 0, mSalt.length);
+    }
 
-	public void setPackageVersion(long packageVersion) {
-		mPackageVersion = packageVersion;
-	}
+    public void setPackageVersion(long packageVersion) {
+        mPackageVersion = packageVersion;
+    }
 
-	public void setFlags(long flags) {
-		mFlags = flags;
-	}
+    public void setFlags(long flags) {
+        mFlags = flags;
+    }
 
-	public boolean parseObbFile(byte[] bytes){
-		data = new LinkedHashMap<>();
+    public boolean parseObbFile(byte[] bytes) {
+        data = new LinkedHashMap<>();
 
-		ByteArrayInputStream stream = null;
-		try {
-			stream = new ByteArrayInputStream(bytes);
-			long fileLength = bytes.length;
+        ByteArrayInputStream stream = null;
+        try {
+            stream = new ByteArrayInputStream(bytes);
+            long fileLength = bytes.length;
 
-			if (fileLength < kFooterMinSize) {
-				return false;            
-			}
+            if(fileLength < kFooterMinSize) {
+                return false;
+            }
 
-			stream.reset();
-			stream.skip(fileLength - kFooterTagSize);
-			byte[] footer = new byte[kFooterTagSize];
-			int len = stream.read(footer);
+            stream.reset();
+            stream.skip(fileLength - kFooterTagSize);
+            byte[] footer = new byte[kFooterTagSize];
+            int len = stream.read(footer);
 
-			if(len == -1 || len < footer.length){
-				return false;
-			}
+            if(len == -1 || len < footer.length) {
+                return false;
+            }
 
-			ByteBuffer footBuf = ByteBuffer.wrap(footer);
-			footBuf.position(4);
-			long fileSig = get4LE(footBuf);
-			if (fileSig != kSignature) {
-				return false;
-			}
+            ByteBuffer footBuf = ByteBuffer.wrap(footer);
+            footBuf.position(4);
+            long fileSig = get4LE(footBuf);
+            if(fileSig != kSignature) {
+                return false;
+            }
 
-			footBuf.rewind();
-			long footerSize = get4LE(footBuf);
-			if (footerSize > fileLength - kFooterTagSize
-					|| footerSize > kMaxBufSize) {
-				return false;
-			}
+            footBuf.rewind();
+            long footerSize = get4LE(footBuf);
+            if(footerSize > fileLength - kFooterTagSize || footerSize > kMaxBufSize) {
+                return false;
+            }
 
-			if (footerSize < (kFooterMinSize - kFooterTagSize)) {
-				return false;
-			}
+            if(footerSize < (kFooterMinSize - kFooterTagSize)) {
+                return false;
+            }
 
-			long fileOffset = fileLength - footerSize - kFooterTagSize;
-			stream.reset();
-			stream.skip(fileOffset);
+            long fileOffset = fileLength - footerSize - kFooterTagSize;
+            stream.reset();
+            stream.skip(fileOffset);
 
-			footer = new byte[(int)footerSize];
-			len = stream.read(footer);
+            footer = new byte[(int)footerSize];
+            len = stream.read(footer);
 
-			if(len == -1 || len < footer.length){
-				return false;
-			}
+            if(len == -1 || len < footer.length) {
+                return false;
+            }
 
-			footBuf = ByteBuffer.wrap(footer);
+            footBuf = ByteBuffer.wrap(footer);
 
-			long sigVersion = get4LE(footBuf);
-			if (sigVersion != kSigVersion) {
-				return false;
-			}
+            long sigVersion = get4LE(footBuf);
+            if(sigVersion != kSigVersion) {
+                return false;
+            }
 
-			footBuf.position(kPackageVersionOffset);
-			mPackageVersion = get4LE(footBuf);
-			data.put(DATA_KEYS[1], String.valueOf(mPackageVersion));
+            footBuf.position(kPackageVersionOffset);
+            mPackageVersion = get4LE(footBuf);
+            data.put(DATA_KEYS[1], String.valueOf(mPackageVersion));
 
-			footBuf.position(kFlagsOffset);
-			mFlags = get4LE(footBuf);
-			data.put(DATA_KEYS[2], String.valueOf(mFlags));
+            footBuf.position(kFlagsOffset);
+            mFlags = get4LE(footBuf);
+            data.put(DATA_KEYS[2], String.valueOf(mFlags));
 
-			footBuf.position(kSaltOffset);
-			footBuf.get(mSalt);
-			data.put(DATA_KEYS[3], Arrays.toString(mSalt));
+            footBuf.position(kSaltOffset);
+            footBuf.get(mSalt);
+            data.put(DATA_KEYS[3], Arrays.toString(mSalt));
 
-			footBuf.position(kPackageNameLenOffset);
-			long packageNameLen = get4LE(footBuf);
-			if (packageNameLen == 0
-					|| packageNameLen > (footerSize - kPackageNameOffset)) {
-				return false;
-			}
-			byte[] packageNameBuf = new byte[(int)packageNameLen];
-			footBuf.position(kPackageNameOffset);
-			footBuf.get(packageNameBuf);
+            footBuf.position(kPackageNameLenOffset);
+            long packageNameLen = get4LE(footBuf);
+            if(packageNameLen == 0 || packageNameLen > (footerSize - kPackageNameOffset)) {
+                return false;
+            }
+            byte[] packageNameBuf = new byte[(int)packageNameLen];
+            footBuf.position(kPackageNameOffset);
+            footBuf.get(packageNameBuf);
 
-			mPackageName = new String(packageNameBuf);
-			data.put(DATA_KEYS[0], mPackageName);
-			return true;
-		} catch (IOException e) {
-			return false;
-		}finally{
-			if(stream != null){
-				try {
-					stream.close();
-				} catch (IOException e) {
-					return false;
-				}
-			}
-		}
-	}
+            mPackageName = new String(packageNameBuf);
+            data.put(DATA_KEYS[0], mPackageName);
+            return true;
+        }
+        catch(IOException e) {
+            return false;
+        }
+        finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                }
+                catch(IOException e) {
+                    return false;
+                }
+            }
+        }
+    }
 
-	public boolean parseObbFile(File obbFile){
-		byte[] bytes = null;
-		try {
-			bytes = Files.readAllBytes(obbFile.toPath());
-		} catch (IOException e) {
-			return false;
-		}
+    public boolean parseObbFile(File obbFile) {
+        byte[] bytes = null;
+        try {
+            bytes = Files.readAllBytes(obbFile.toPath());
+        }
+        catch(IOException e) {
+            return false;
+        }
 
-		return parseObbFile(bytes);
-	}
+        return parseObbFile(bytes);
+    }
 
-	public boolean writeTo(String fileName)
-	{
-		File obbFile = new File(fileName);
-		return writeTo(obbFile);
-	}
+    public boolean writeTo(String fileName) {
+        File obbFile = new File(fileName);
+        return writeTo(obbFile);
+    }
 
-	public boolean writeTo(File obbFile) {
-		if ( !obbFile.exists() )
-			return false;
+    public boolean writeTo(File obbFile) {
+        if(!obbFile.exists())
+            return false;
 
-		try {
+        try {
 
-			long fileLength = obbFile.length();
-			RandomAccessFile raf = new RandomAccessFile(obbFile, "rw");
-			raf.seek(fileLength);
+            long fileLength = obbFile.length();
+            RandomAccessFile raf = new RandomAccessFile(obbFile, "rw");
+            raf.seek(fileLength);
 
-			if (null == mPackageName || mPackageVersion == -1) {
-				raf.close();
-				throw new RuntimeException("tried to write uninitialized ObbFile data");
-			}
+            if(null == mPackageName || mPackageVersion == -1) {
+                raf.close();
+                throw new RuntimeException("tried to write uninitialized ObbFile data");
+            }
 
-			FileChannel fc = raf.getChannel();
-			ByteBuffer bbInt = ByteBuffer.allocate(4);
-			bbInt.order(ByteOrder.LITTLE_ENDIAN);
-			bbInt.putInt(kSigVersion);
-			bbInt.rewind();
-			fc.write(bbInt);
+            FileChannel fc = raf.getChannel();
+            ByteBuffer bbInt = ByteBuffer.allocate(4);
+            bbInt.order(ByteOrder.LITTLE_ENDIAN);
+            bbInt.putInt(kSigVersion);
+            bbInt.rewind();
+            fc.write(bbInt);
 
-			bbInt.rewind();
-			bbInt.putInt((int)mPackageVersion);
-			bbInt.rewind();
-			fc.write(bbInt);
+            bbInt.rewind();
+            bbInt.putInt((int)mPackageVersion);
+            bbInt.rewind();
+            fc.write(bbInt);
 
-			bbInt.rewind();
-			bbInt.putInt((int)mFlags);
-			bbInt.rewind();
-			fc.write(bbInt);
+            bbInt.rewind();
+            bbInt.putInt((int)mFlags);
+            bbInt.rewind();
+            fc.write(bbInt);
 
-			raf.write(mSalt);
+            raf.write(mSalt);
 
-			bbInt.rewind();
-			bbInt.putInt(mPackageName.length());
-			bbInt.rewind();
-			fc.write(bbInt);
+            bbInt.rewind();
+            bbInt.putInt(mPackageName.length());
+            bbInt.rewind();
+            fc.write(bbInt);
 
-			raf.write(mPackageName.getBytes());
+            raf.write(mPackageName.getBytes());
 
-			bbInt.rewind();
-			bbInt.putInt(mPackageName.length()+kPackageNameOffset);
-			bbInt.rewind();
-			fc.write(bbInt);
+            bbInt.rewind();
+            bbInt.putInt(mPackageName.length() + kPackageNameOffset);
+            bbInt.rewind();
+            fc.write(bbInt);
 
-			bbInt.rewind();
-			bbInt.putInt((int)kSignature);
-			bbInt.rewind();
-			fc.write(bbInt);
+            bbInt.rewind();
+            bbInt.putInt((int)kSignature);
+            bbInt.rewind();
+            fc.write(bbInt);
 
-			raf.close();    
-			return true;
-		} catch (IOException e) {
-		}
+            raf.close();
+            return true;
+        }
+        catch(IOException e) {
+        }
 
-		return false;
-	}    
+        return false;
+    }
 }
