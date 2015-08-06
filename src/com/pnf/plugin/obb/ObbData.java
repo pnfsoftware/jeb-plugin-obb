@@ -24,7 +24,7 @@
  * 
  */
 
-package com.pnf;
+package com.pnf.plugin.obb;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

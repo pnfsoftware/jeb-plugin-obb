@@ -1,4 +1,4 @@
-package com.pnf;
+package com.pnf.plugin.obb;
 
 import java.io.IOException;
 import java.io.InputStream;
