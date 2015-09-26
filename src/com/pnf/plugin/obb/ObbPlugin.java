@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package com.pnf.plugin.obb;
 
 import java.io.IOException;
@@ -37,13 +38,13 @@ import com.pnfsoftware.jeb.util.logging.ILogger;
 
 public class ObbPlugin extends AbstractUnitIdentifier {
     public static final ILogger LOG = GlobalLog.getLogger(ObbPlugin.class);
-    private static final int[] OBB_SIG = { (byte)0x83, (byte)0x99, (byte)0x05, (byte)0x01 };
+    private static final int[] OBB_SIG = {(byte)0x83, (byte)0x99, (byte)0x05, (byte)0x01};
     public static final String ID = "obb";
     public static final String FAT_IMAGE_NAME = "obb_image";
 
     public ObbPlugin() {
         super(ID, 1); // Give ObbPlugin higher priority than FatPlugin to
-                            // make sure we enter this plugin first
+                      // make sure we enter this plugin first
     }
 
     public boolean canIdentify(IInput stream, IUnitCreator unit) {

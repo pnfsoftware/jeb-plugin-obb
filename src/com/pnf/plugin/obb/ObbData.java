@@ -71,7 +71,7 @@ public class ObbData {
     private static final int kPackageNameLenOffset = 20;
     private static final int kPackageNameOffset = 24;
 
-    public static final String[] DATA_KEYS = { "PACKAGE_NAME", "PACKAGE_VERSION", "FLAGS", "SALT" };
+    public static final String[] DATA_KEYS = {"PACKAGE_NAME", "PACKAGE_VERSION", "FLAGS", "SALT"};
 
     private long mPackageVersion = -1, mFlags;
     private String mPackageName;
@@ -153,9 +153,7 @@ public class ObbData {
     public boolean parseObbFile(byte[] bytes) {
         data = new LinkedHashMap<>();
 
-        ByteArrayInputStream stream = null;
-        try {
-            stream = new ByteArrayInputStream(bytes);
+        try(ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
             long fileLength = bytes.length;
 
             if(fileLength < kFooterMinSize) {
@@ -234,16 +232,6 @@ public class ObbData {
         catch(IOException e) {
             return false;
         }
-        finally {
-            if(stream != null) {
-                try {
-                    stream.close();
-                }
-                catch(IOException e) {
-                    return false;
-                }
-            }
-        }
     }
 
     public boolean parseObbFile(File obbFile) {
@@ -264,62 +252,57 @@ public class ObbData {
     }
 
     public boolean writeTo(File obbFile) {
-        if(!obbFile.exists())
+        if(!obbFile.exists()) {
             return false;
+        }
 
-        try {
+        if(null == mPackageName || mPackageVersion == -1) {
+            throw new RuntimeException("tried to write uninitialized ObbFile data");
+        }
 
-            long fileLength = obbFile.length();
-            RandomAccessFile raf = new RandomAccessFile(obbFile, "rw");
+        long fileLength = obbFile.length();
+        try(RandomAccessFile raf = new RandomAccessFile(obbFile, "rw")) {
             raf.seek(fileLength);
+            try(FileChannel fc = raf.getChannel()) {
+                ByteBuffer bbInt = ByteBuffer.allocate(4);
+                bbInt.order(ByteOrder.LITTLE_ENDIAN);
+                bbInt.putInt(kSigVersion);
+                bbInt.rewind();
+                fc.write(bbInt);
 
-            if(null == mPackageName || mPackageVersion == -1) {
-                raf.close();
-                throw new RuntimeException("tried to write uninitialized ObbFile data");
+                bbInt.rewind();
+                bbInt.putInt((int)mPackageVersion);
+                bbInt.rewind();
+                fc.write(bbInt);
+
+                bbInt.rewind();
+                bbInt.putInt((int)mFlags);
+                bbInt.rewind();
+                fc.write(bbInt);
+
+                raf.write(mSalt);
+
+                bbInt.rewind();
+                bbInt.putInt(mPackageName.length());
+                bbInt.rewind();
+                fc.write(bbInt);
+
+                raf.write(mPackageName.getBytes());
+
+                bbInt.rewind();
+                bbInt.putInt(mPackageName.length() + kPackageNameOffset);
+                bbInt.rewind();
+                fc.write(bbInt);
+
+                bbInt.rewind();
+                bbInt.putInt((int)kSignature);
+                bbInt.rewind();
+                fc.write(bbInt);
             }
-
-            FileChannel fc = raf.getChannel();
-            ByteBuffer bbInt = ByteBuffer.allocate(4);
-            bbInt.order(ByteOrder.LITTLE_ENDIAN);
-            bbInt.putInt(kSigVersion);
-            bbInt.rewind();
-            fc.write(bbInt);
-
-            bbInt.rewind();
-            bbInt.putInt((int)mPackageVersion);
-            bbInt.rewind();
-            fc.write(bbInt);
-
-            bbInt.rewind();
-            bbInt.putInt((int)mFlags);
-            bbInt.rewind();
-            fc.write(bbInt);
-
-            raf.write(mSalt);
-
-            bbInt.rewind();
-            bbInt.putInt(mPackageName.length());
-            bbInt.rewind();
-            fc.write(bbInt);
-
-            raf.write(mPackageName.getBytes());
-
-            bbInt.rewind();
-            bbInt.putInt(mPackageName.length() + kPackageNameOffset);
-            bbInt.rewind();
-            fc.write(bbInt);
-
-            bbInt.rewind();
-            bbInt.putInt((int)kSignature);
-            bbInt.rewind();
-            fc.write(bbInt);
-
-            raf.close();
-            return true;
         }
         catch(IOException e) {
+            return false;
         }
-
-        return false;
+        return true;
     }
 }

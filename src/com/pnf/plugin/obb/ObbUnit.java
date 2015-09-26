@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package com.pnf.plugin.obb;
 
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class ObbUnit extends AbstractBinaryUnit {
 
         // Append all key-value pairs to the description received from the
         // superclass
-        for(String s : keys) {
+        for(String s: keys) {
             desc.append(tab + s + " := " + data.get(s) + "\n");
         }
 
