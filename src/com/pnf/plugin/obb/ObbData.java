@@ -38,6 +38,10 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.pnfsoftware.jeb.util.serialization.annotations.Ser;
+import com.pnfsoftware.jeb.util.serialization.annotations.SerId;
+
+@Ser
 public class ObbData {
     public static final int OBB_OVERLAY = (1 << 0);
     public static final int OBB_SALTED = (1 << 1);
@@ -73,10 +77,15 @@ public class ObbData {
 
     public static final String[] DATA_KEYS = {"PACKAGE_NAME", "PACKAGE_VERSION", "FLAGS", "SALT"};
 
-    private long mPackageVersion = -1, mFlags;
+    @SerId(1)
+    private long mPackageVersion = -1;
+    @SerId(2)
+    private long mFlags;
+    @SerId(3)
     private String mPackageName;
+    @SerId(4)
     private byte[] mSalt = new byte[8];
-
+    @SerId(5)
     private Map<String, String> data;
 
     public ObbData() {

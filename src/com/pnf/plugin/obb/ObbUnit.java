@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.pnfsoftware.jeb.core.IUnitCreator;
-import com.pnfsoftware.jeb.core.events.J;
-import com.pnfsoftware.jeb.core.events.JebEvent;
 import com.pnfsoftware.jeb.core.input.BytesInput;
 import com.pnfsoftware.jeb.core.input.IInput;
 import com.pnfsoftware.jeb.core.properties.IPropertyDefinitionManager;
@@ -32,8 +30,12 @@ import com.pnfsoftware.jeb.core.units.AbstractBinaryUnit;
 import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
 import com.pnfsoftware.jeb.util.IO;
+import com.pnfsoftware.jeb.util.serialization.annotations.Ser;
+import com.pnfsoftware.jeb.util.serialization.annotations.SerId;
 
+@Ser
 public class ObbUnit extends AbstractBinaryUnit {
+    @SerId(1)
     private ObbData image;
 
     public ObbUnit(ObbData image, String name, IInput data, IUnitProcessor unitProcessor, IUnitCreator parent,
@@ -82,9 +84,9 @@ public class ObbUnit extends AbstractBinaryUnit {
         IUnit fatChildUnit = getUnitProcessor().process(ObbPlugin.FAT_IMAGE_NAME, new BytesInput(data), this);
 
         // Add new FAT unit to this unit's list of children
-        this.getChildren().add(fatChildUnit);
-        notifyListeners(new JebEvent(J.UnitChange));
+        addChild(fatChildUnit);
 
+        setProcessed(true);
         return true;
     }
 }

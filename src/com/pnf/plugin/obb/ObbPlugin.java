@@ -47,13 +47,19 @@ public class ObbPlugin extends AbstractUnitIdentifier {
                       // make sure we enter this plugin first
     }
 
+    @Override
+    public PluginInformation getPluginInformation() {
+        return new PluginInformation("Android OBB Plugin", "Opaque Binary Blob Parser", "PNF Software", new Version(1,
+                0, 1));
+    }
+
     public boolean canIdentify(IInput stream, IUnitCreator unit) {
         // Check for obb signature
         try(SeekableByteChannel ch = stream.getChannel()) {
             ch.position(ch.size() - OBB_SIG.length);
             ByteBuffer buff = ByteBuffer.allocate(OBB_SIG.length);
             ch.read(buff);
-            return checkBytes(buff, 0, OBB_SIG);
+            return checkBytes(buff.array(), 0, OBB_SIG);
         }
         catch(IOException e) {
             return false;
@@ -85,11 +91,5 @@ public class ObbPlugin extends AbstractUnitIdentifier {
 
         // Return the newly created ObbUnit
         return obbUnit;
-    }
-
-    @Override
-    public PluginInformation getPluginInformation() {
-        return new PluginInformation("Android OBB Plugin", "Opaque Binary Blob Parser", "PNF Software", new Version(1,
-                0, 0));
     }
 }
