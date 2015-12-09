@@ -49,8 +49,9 @@ public class ObbPlugin extends AbstractUnitIdentifier {
 
     @Override
     public PluginInformation getPluginInformation() {
-        return new PluginInformation("Android OBB Plugin", "Opaque Binary Blob Parser", "PNF Software", new Version(1,
-                0, 1));
+        // requires JEB 2.1
+        return new PluginInformation("Android OBB Plugin", "Opaque Binary Blob Parser", "PNF Software",
+                Version.create(1,0, 1), Version.create(2, 1), null);
     }
 
     public boolean canIdentify(IInput stream, IUnitCreator unit) {

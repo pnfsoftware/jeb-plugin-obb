@@ -67,6 +67,10 @@ public class ObbUnit extends AbstractBinaryUnit {
     }
 
     public boolean process() {
+        if(isProcessed()) {
+            return true;
+        }
+
         // Retrieve raw bytes passed to this unit
         byte[] data = null;
 
@@ -82,8 +86,6 @@ public class ObbUnit extends AbstractBinaryUnit {
 
         // Call unit processor on modified data (will return a FAT unit)
         IUnit fatChildUnit = getUnitProcessor().process(ObbPlugin.FAT_IMAGE_NAME, new BytesInput(data), this);
-
-        // Add new FAT unit to this unit's list of children
         addChild(fatChildUnit);
 
         setProcessed(true);
