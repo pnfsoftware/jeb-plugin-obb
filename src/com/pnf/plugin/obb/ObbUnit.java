@@ -29,10 +29,16 @@ import com.pnfsoftware.jeb.core.properties.IPropertyDefinitionManager;
 import com.pnfsoftware.jeb.core.units.AbstractBinaryUnit;
 import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
-import com.pnfsoftware.jeb.util.IO;
+import com.pnfsoftware.jeb.util.io.IO;
 import com.pnfsoftware.jeb.util.serialization.annotations.Ser;
 import com.pnfsoftware.jeb.util.serialization.annotations.SerId;
 
+/**
+ * 
+ * 
+ * @author PNF Software
+ *
+ */
 @Ser
 public class ObbUnit extends AbstractBinaryUnit {
     @SerId(1)

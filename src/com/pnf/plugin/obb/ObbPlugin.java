@@ -32,12 +32,19 @@ import com.pnfsoftware.jeb.core.properties.IPropertyManager;
 import com.pnfsoftware.jeb.core.units.AbstractUnitIdentifier;
 import com.pnfsoftware.jeb.core.units.IUnit;
 import com.pnfsoftware.jeb.core.units.IUnitProcessor;
-import com.pnfsoftware.jeb.util.IO;
+import com.pnfsoftware.jeb.util.io.IO;
 import com.pnfsoftware.jeb.util.logging.GlobalLog;
 import com.pnfsoftware.jeb.util.logging.ILogger;
 
+/**
+ * Android APK Expansion File plugin.
+ * 
+ * @author PNF Software
+ *
+ */
 public class ObbPlugin extends AbstractUnitIdentifier {
     public static final ILogger LOG = GlobalLog.getLogger(ObbPlugin.class);
+
     private static final int[] OBB_SIG = {(byte)0x83, (byte)0x99, (byte)0x05, (byte)0x01};
     public static final String ID = "obb";
     public static final String FAT_IMAGE_NAME = "obb_image";
@@ -51,7 +58,7 @@ public class ObbPlugin extends AbstractUnitIdentifier {
     public PluginInformation getPluginInformation() {
         // requires JEB 2.1
         return new PluginInformation("Android OBB Plugin", "Opaque Binary Blob Parser", "PNF Software",
-                Version.create(1,0, 1), Version.create(2, 1), null);
+                Version.create(1, 0, 2), Version.create(2, 3, 3), null);
     }
 
     public boolean canIdentify(IInput stream, IUnitCreator unit) {

@@ -41,6 +41,12 @@ import java.util.Map;
 import com.pnfsoftware.jeb.util.serialization.annotations.Ser;
 import com.pnfsoftware.jeb.util.serialization.annotations.SerId;
 
+/**
+ * 
+ * 
+ * @author PNF Software
+ *
+ */
 @Ser
 public class ObbData {
     public static final int OBB_OVERLAY = (1 << 0);
